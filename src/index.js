@@ -1,5 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FormControl } from 'react-bootstrap';
+import _ from 'lodash';
+
+const FORM_CONTROL_PROPS = [
+  '_ref',
+  'as',
+  'disabled',
+  'id',
+  'plaintext',
+  'readOnly',
+  'size',
+  'type',
+  'value',
+  'bsPrefix',
+  'placeholder',
+
+  // props below are controlled by redux-form
+  'isInvalid',
+  'isValid',
+  'onChange'
+];
 
 export default class ReactGoogleAutocomplete extends React.Component {
   static propTypes = {
@@ -17,12 +38,14 @@ export default class ReactGoogleAutocomplete extends React.Component {
   }
 
   componentDidMount() {
+
     const {
       types=['(cities)'],
       componentRestrictions,
       bounds,
       fields = ["address_components", "geometry.location", "place_id", "formatted_address"]
     } = this.props;
+
     const config = {
       types,
       bounds,
@@ -35,7 +58,7 @@ export default class ReactGoogleAutocomplete extends React.Component {
 
     this.disableAutofill();
 
-    this.autocomplete = new google.maps.places.Autocomplete(this.refs.input, config);
+    this.autocomplete = new window.google.maps.places.Autocomplete(this.refs.input, config);
 
     this.event = this.autocomplete.addListener('place_changed', this.onSelected.bind(this));
   }
@@ -61,77 +84,64 @@ export default class ReactGoogleAutocomplete extends React.Component {
   }
 
   onSelected() {
+    this.setFieldValues(this.autocomplete.getPlace());
     if (this.props.onPlaceSelected) {
       this.props.onPlaceSelected(this.autocomplete.getPlace());
     }
   }
 
-  render() {
-    const {onPlaceSelected, types, componentRestrictions, bounds, ...rest} = this.props;
-
-    return (
-      <input
-        ref="input"
-        {...rest}
-      />
-    );
-  }
-}
-
-export class ReactCustomGoogleAutocomplete extends React.Component {
-  static propTypes = {
-    input: PropTypes.node.isRequired,
-    onOpen: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
-  }
-
-  constructor(props) {
-    super(props);
-    this.service = new google.maps.places.AutocompleteService();
-  }
-
-  onChange(e) {
-    const { types=['(cities)'] } = this.props;
-
-    if(e.target.value) {
-      this.service.getPlacePredictions({input: e.target.value, types}, (predictions, status) => {
-        if (status === 'OK' && predictions && predictions.length > 0) {
-          this.props.onOpen(predictions);
-            console.log(predictions);
-        } else {
-          this.props.onClose();
-        }
-      });
-    } else {
-      this.props.onClose();
+  setFieldValues(place) {
+    const { input, geoLocation, components, placeId } = this.props;
+    if (input) {
+      input.onChange(place.formatted_address);
     }
-  }
-
-	componentDidMount() {
-    if (this.props.input.value) {
-      this.placeService = new google.maps.places.PlacesService(this.refs.div);
-      this.placeService.getDetails({placeId: this.props.input.value}, (e, status) => {
-        if(status === 'OK') {
-					this.refs.input.value = e.formatted_address;
-        }
-      });
+    if (geoLocation) {
+      geoLocation.input.onChange(place.geometry.location);
+    }
+    if (components) {
+      components.input.onChange(place.address_components);
+    }
+    if (placeId) {
+      placeId.input.onChange(place.place_id);
     }
   }
 
   render() {
+    const {
+      onPlaceSelected,
+      types,
+      componentRestrictions,
+      bounds,
+      input = {},
+      geoLocation,
+      components,
+      placeId,
+      onChange,
+      ...rest
+    } = this.props;
+    
     return (
-      <div>
-        {React.cloneElement(this.props.input,
-          {
-            ...this.props,
-    			  ref: 'input',
-            onChange: (e) => {
-              this.onChange(e);
-            },
+        <FormControl
+          {...input}
+          ref="input"
+          {..._.pick(rest, FORM_CONTROL_PROPS)}
+          onChange={
+            (evt) => {
+              this.setFieldValues({
+                formatted_address: '',
+                geometry: {
+                  location: null,
+                },
+                address_components: [],
+                place_id: '',
+              });
+              input.onChange(evt.target.value);
+              if (onChange) {
+                onChange();
+              }
+            }
           }
-        )}
-        <div ref="div"></div>
-      </div>
+        />
     );
   }
 }

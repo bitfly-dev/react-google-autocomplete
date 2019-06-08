@@ -1,6 +1,6 @@
 {
-  "name": "react-google-autocomplete",
-  "version": "1.1.0",
+  "name": "@bitfly/react-google-autocomplete",
+  "version": "1.0.0",
   "description": "React component for google autocomplete.",
   "main": "index.js",
   "scripts": {
@@ -9,25 +9,33 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ErrorPro/react-google-autocomplete.git"
+    "url": "git+https://github.com/bitfly-dev/react-google-autocomplete.git"
   },
   "keywords": [
     "react",
     "google",
     "autocomplete",
+    "bootstrap",
+    "form",
+    "redux",
     "react google autocomplete",
     "react google",
     "react autocomplete",
-    "google autocomplete"
+    "google autocomplete",
+    "react bootstrap",
+    "redux form google",
+    "redux form google autocomplete"
   ],
-  "author": "Ven Korolev",
+  "author": "Adam Yao",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ErrorPro/react-google-autocomplete/issues"
+    "url": "https://github.com/bitfly-dev/react-google-autocomplete/issues"
   },
-  "homepage": "https://github.com/ErrorPro/react-google-autocomplete#readme",
+  "homepage": "https://github.com/bitfly-dev/react-google-autocomplete#readme",
   "dependencies": {
-    "prop-types": "^15.5.0"
+    "prop-types": "^15.5.0",
+    "lodash": "^4.17.11",
+    "react-bootstrap": "^1.0.0-beta.8"
   },
   "peerDependencies": {
     "react": "*"
