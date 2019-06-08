@@ -29,6 +29,10 @@ export default class ReactGoogleAutocomplete extends React.Component {
     componentRestrictions: PropTypes.object,
     bounds: PropTypes.object,
     fields: PropTypes.array,
+    address: PropTypes.object.isRequired,
+    geoLocation: PropTypes.object,
+    components: PropTypes.array,
+    placeId: PropTypes.string,
   }
 
   constructor(props) {
@@ -91,10 +95,11 @@ export default class ReactGoogleAutocomplete extends React.Component {
   }
 
   setFieldValues(place) {
-    const { input, geoLocation, components, placeId } = this.props;
-    if (input) {
-      input.onChange(place.formatted_address);
-    }
+    
+    const { address, geoLocation, components, placeId } = this.props;
+
+    address.input.onChange(place.formatted_address);
+
     if (geoLocation) {
       geoLocation.input.onChange(place.geometry.location);
     }
@@ -112,17 +117,16 @@ export default class ReactGoogleAutocomplete extends React.Component {
       types,
       componentRestrictions,
       bounds,
-      input = {},
+      address,
       geoLocation,
       components,
       placeId,
-      onChange,
       ...rest
     } = this.props;
-    
+
     return (
         <FormControl
-          {...input}
+          {...address.input}
           ref="input"
           {..._.pick(rest, FORM_CONTROL_PROPS)}
           onChange={
@@ -135,10 +139,7 @@ export default class ReactGoogleAutocomplete extends React.Component {
                 address_components: [],
                 place_id: '',
               });
-              input.onChange(evt.target.value);
-              if (onChange) {
-                onChange();
-              }
+              address.input.onChange(evt.target.value);
             }
           }
         />
