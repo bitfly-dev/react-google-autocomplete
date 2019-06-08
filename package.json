@@ -1,6 +1,6 @@
 {
   "name": "@bitfly/react-google-autocomplete",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React component for google autocomplete.",
   "main": "index.js",
   "scripts": {
